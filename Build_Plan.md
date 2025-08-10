@@ -1,3 +1,237 @@
+# Study Sprint Co-Pilot v2.0 📚
+
+A serious, structured academic study companion designed to help students and professionals study more effectively by combining guided study sessions, resource management, and spaced repetition review — all offline, ensuring complete privacy.
+
+## 🎯 Core Philosophy
+
+**Study Sprint Co-Pilot** emphasizes clarity, guidance, and accessibility without gamification. Instead of points, streaks, or playful graphics, it focuses on effective study methods, minimal distractions, and a clean, academic visual tone.
+
+## ✨ Key Features
+
+### 🧠 Guided Study Modes
+- **Built-in Methods**: Active Recall, Feynman Technique, Problem Sets, Read→Recall, Outline→Drill
+- **Structured Phases**: Warm-Up, Deep Work, Recall, Review, Break with timers and prompts
+- **Custom Workflows**: Save personal study modes to match your workflow
+
+### 📅 Session Planning
+- **Topic Selection**: Choose subject or chapter
+- **Method Selection**: Pick study mode
+- **Goal Setting**: Define what to achieve
+- **Duration Planning**: Set total time
+- **Resource Attachment**: Add PDFs, images, web links via UIDocumentPicker + QuickLook
+- **Calendar Integration**: Import deadlines and class schedules (EventKit)
+
+### 💡 Mid-Session Prompts
+- **Local JSON Prompt Packs**: Structured prompts triggered at specific checkpoints
+- **Automatic & Manual**: Timed prompts or user-triggered guidance
+- **Mode-Specific**: Tailored prompts for each study method
+- **Examples**:
+  - Active Recall: "Close your notes. Write down three key facts from memory."
+  - Feynman: "Explain the last concept in one sentence as if teaching a beginner."
+
+### ✅ Checkpoints & Reflection
+- **Active Engagement**: Mini-tasks during sessions (summarizing, recalling terms)
+- **Post-Session Reflection**:
+  - What stuck?
+  - What needs review?
+  - Difficulty rating (easy → hard)
+- **Automatic Review Scheduling**: Creates ReviewTasks with spaced intervals (1, 3, 7, 14 days)
+
+### 🔄 Spaced Review System
+- **Review Notifications**: Reminders for upcoming review tasks
+- **Review Screen Features**:
+  - Flashcards (manual or imported)
+  - Past checkpoints from previous sessions
+- **Adaptive Intervals**: Completion and difficulty feedback adjust future review timing
+
+### 📚 Resource Drawer
+- **Topic-Specific Library**: PDFs, images, links organized by subject
+- **PencilKit Integration**: Scratch pad for diagrams and handwritten notes
+- **Session Integration**: Accessible during study via slide-in overlay
+- **Never Leave Session**: All resources available without interruption
+
+### 🃏 Flashcards
+- **Manual Creation**: Build cards directly in-app
+- **Import Formats**: CSV, TXT, JSON with field mapping
+- **Media Support**: Optional ZIP bundles for images/audio
+- **Export Options**: CSV + optional media ZIP for backups or sharing
+
+### 📊 Insights Dashboard
+- **Visual Progress Tracking**: Swift Charts integration
+- **Key Metrics**:
+  - Total focused time
+  - Sessions by topic/mode
+  - Review completion rates
+  - Topics needing most review
+- **Local Data**: Stored locally, visualized accessibly and minimally
+
+## 🏗️ Technical Architecture
+
+### Frameworks
+- **SwiftUI**: Cross-platform UI framework
+- **Core Data**: On-device storage with optional iCloud sync
+- **UserNotifications**: Review reminders and session alerts
+- **ActivityKit**: Live Activities for timers
+- **WidgetKit**: Home screen widgets for upcoming reviews/sessions
+- **EventKit**: Calendar import and integration
+- **QuickLook**: Resource previews
+- **UIDocumentPicker**: File import/export
+- **PencilKit**: Drawing and sketching in Resource Drawer
+- **Swift Charts**: Insights visualizations
+
+### Constraints
+- **Offline-First**: All functionality available without internet
+- **Privacy-Focused**: All data stored locally; cloud sync is optional and user-controlled
+- **Multi-Platform**: iOS 17+, iPadOS 17+, macOS 14+ (Catalyst)
+- **No Gamification**: No points, streaks, or game-like rewards
+- **Accessibility**: VoiceOver support, Dynamic Type, haptics, color-blind safe
+
+## 🎨 Design System
+
+### Brand Theme
+```swift
+enum Theme {
+    static let primary = Color(hex: "745DD0")      // Royal Purple
+    static let secondary = Color(hex: "7D98D3")    // Periwinkle
+    static let bgMain = Color(hex: "F3F1F8")      // Soft Lavender Gray
+    static let textMain = Color(hex: "080709")     // Near-black
+    static let canvas = Color(hex: "FDFDFE")       // Paper White
+    static let onPrimary = Color.white
+}
+```
+
+### Visual Style
+- **Cards & Panels**: Rounded corners (20–24pt), `.ultraThinMaterial` for overlays, subtle shadows
+- **Spacing**: Base 16pt, consistent grid alignment
+- **Typography**: Large, bold, readable titles with comfortable line height
+- **Color Usage**: Backgrounds in `bgMain`, content surfaces in `canvas`, CTAs in `primary`
+- **Animations**: Minimal, fast (150–220ms easeInOut)
+- **Accessibility**: High-contrast text, VoiceOver labels, tap targets ≥44×44pt
+
+## 📱 App Structure
+
+### Main Navigation Tabs
+1. **Home**: Today's plan, quick start, upcoming reviews
+2. **Sessions**: Start new session, session history
+3. **Reviews**: Pending reviews, flashcards, checkpoints
+4. **Resources**: Per-topic resource library
+5. **Insights**: Analytics and charts
+
+### Data Model
+- **Topic**: Name, resources
+- **StudySession**: Mode, topic, start/end, phases, notes
+- **Checkpoint**: Text, timestamp, linked to session
+- **ReviewTask**: Topic, due date, status
+- **Flashcard**: Front, back, tags, deck
+- **Prompt**: Text, mode(s), phase(s), elapsed time range
+
+## 🚀 Development Approach
+
+### Vertical Slices
+Build in vertical slices, completing one end-to-end feature before moving on:
+1. App shell, theme, and navigation
+2. Session engine + prompt delivery
+3. Resource Drawer integration
+4. Flashcard CRUD + import/export
+5. Insights dashboard + charts
+6. Reflection + spaced review scheduling
+
+### Priorities
+- **Stability and accessibility** over new features
+- **Consistent design** across platforms
+- **Performance optimization** for smooth user experience
+
+## 👥 User Scenarios
+
+### Scenario 1: Exam Prep (Emma, College Student)
+**Goal**: Prepare for biology midterm using Active Recall
+1. **Home Tab**: Sees today's plan with suggested session
+2. **Session Planning**: Mode, topic, duration, goal, adds lecture PDF
+3. **During Session**: Timer, phase indicators, timed prompts
+4. **Break & Reflection**: Post-session reflection, review scheduling
+5. **Review Day**: Widget notifications, flashcard review
+
+### Scenario 2: Research Paper (David, Law Student)
+**Goal**: Draft legal ethics paper outline using Feynman Technique
+1. **Session Planning**: Feynman mode, 40 minutes, case ruling PDF
+2. **During Session**: Phase-based prompts, checkpoint creation
+3. **Reflection**: Difficulty rating, review scheduling
+
+### Scenario 3: Daily Vocabulary (Sara, High School Student)
+**Goal**: Keep up with Spanish vocabulary using flashcards
+1. **Review Tab**: Shows due cards, difficulty rating
+2. **Import**: CSV from teacher via Document Picker
+3. **Spaced Review**: Adaptive intervals based on performance
+
+### Scenario 4: Engineering Study (Leo, Engineering Student)
+**Goal**: Study circuit theory with diagrams and annotations
+1. **Session Planning**: Problem Sets mode, schematic diagram
+2. **Resource Integration**: PencilKit scratch pad for annotations
+3. **Checkpoint Creation**: Review needs identification
+
+## 🔧 Technical Requirements
+
+### Performance Targets
+- **Launch Time**: <2 seconds cold start
+- **UI Updates**: <100ms response time
+- **Memory Usage**: Under 200MB for 1000+ flashcards
+- **Battery**: Minimal background activity, idle CPU under 5%
+
+### Data Privacy & Export
+- **Local-Only Default**: Explicit opt-in for iCloud sync
+- **Export Options**: Sessions (CSV/JSON), Flashcards (CSV/ZIP), Resources (ZIP)
+- **Privacy Note**: "We never collect your study data"
+
+### Error Handling
+- **File Import**: Clear error messages with template offers
+- **Empty States**: Friendly placeholders for each tab
+- **Notifications**: Graceful permission denial handling
+- **Data Conflicts**: User prompts for duplicate imports
+
+## 🧪 Testing & Quality
+
+### Testing Requirements
+- **Unit Tests**: PromptEngine filtering, ReviewTask scheduling, import parsing
+- **UI Tests**: Complete user flows, flashcard review, resource import
+- **Performance Tests**: Load 1000+ flashcards under 200ms, CSV import within 3s
+
+### Accessibility & Localization
+- **VoiceOver**: Full descriptions for all interactive elements
+- **Dynamic Type**: Test at XXL sizes without layout breaks
+- **High Contrast**: Mode adjustments
+- **Localization**: Future multi-language support preparation
+
+## 🔮 Future Enhancements
+
+### Version 2+ Features
+- **Audio Notes**: Recording inside sessions
+- **Advanced Search**: Filter across topics/resources
+- **Review Algorithms**: Leitner, SM-2 scheduling
+- **Exam Templates**: SAT, MCAT, LSAT preparation
+- **Collaboration**: Local AirDrop sharing of decks/resources
+
+## 📋 Release Checklist
+
+Before shipping updates:
+1. ✅ Pass all unit/UI/performance tests
+2. ✅ Validate Core Data migrations
+3. ✅ Confirm icons, launch screens, widgets work on all devices
+4. ✅ Update App Store metadata/screenshots
+5. ✅ Verify privacy policy in settings
+
+## 🤝 Contributing
+
+We welcome contributions focused on stability, accessibility, and academic effectiveness. Please see our contributing guidelines for more information.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+**Study Sprint Co-Pilot v2.0** - Transform your study habits with proven academic methods and structured learning! 📚✨ 
+
+
 # Study Sprint Co-Pilot v2.0 - BUILD PLAN
 
 ## 🎯 Project Overview
