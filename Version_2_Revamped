@@ -1,0 +1,401 @@
+Study Sprint Co-Pilot — Product Vision &
+Technical Specification
+1. Overview
+Study Sprint Co-Pilot is a multi-platform SwiftUI application for iOS, iPadOS, and macOS
+Catalyst.
+It is a serious, structured academic study companion designed to help students and
+professionals study more effectively by combining guided study sessions, resource
+management, and spaced repetition review — all offline, ensuring complete privacy.
+The app emphasizes clarity, guidance, and accessibility without gamification. Instead of points,
+streaks, or playful graphics, it focuses on effective study methods, minimal distractions, and a
+clean, academic visual tone.
+2. Goals
+• Structure: Guide users through proven study methods in a way that’s easy to follow.
+• Focus: Reduce distractions during study sessions while still giving actionable prompts
+and checkpoints.
+• Retention: Help users retain information with a built-in spaced review system.
+• Organization: Keep study resources (notes, PDFs, images, links) linked to topics and
+accessible during sessions.
+• Privacy: Keep all user data stored on-device with optional iCloud sync.
+• Consistency: Work seamlessly across iPhone, iPad, and Mac.
+3. Core Features
+3.1 Guided Study Modes
+• Built-in methods: Active Recall, Feynman Technique, Problem Sets, Read→Recall,
+Outline→Drill.
+• Each mode has preset phases (Warm-Up, Deep Work, Recall, Review, Break) with
+timers and prompts tailored to that method.
+• Users can save custom modes to match their personal workflow.
+3.2 Session Planning
+• The planning flow asks for:
+2. Topic (subject or chapter)
+1. Mode (study method)
+3. Goal (what to achieve this session)
+4. Duration (total time)
+• Optional Calendar integration (EventKit) to import deadlines and class schedules,
+enabling automatic session suggestions.
+• Attach resources (PDFs, images, web links) via UIDocumentPicker + QuickLook for
+quick reference during the session.
+3.3 Mid-Session Prompts
+• Uses local JSON “Prompt Packs” with structured entries containing:
+◦ Applicable mode(s)
+◦ Phase(s)
+◦ Elapsed time range (% of session)
+◦ Prompt text
+• Prompts can be automatic (triggered at specific checkpoints) or manual (tapped by the
+user).
+• Examples:
+◦ Active Recall: “Close your notes. Write down three key facts from memory.”
+◦ Feynman: “Explain the last concept in one sentence as if teaching a beginner.”
+3.4 Checkpoints & Reflection
+• Checkpoints are mini-tasks that help the user actively engage during the session (e.g.,
+summarizing a section, recalling terms).
+• Reflection Phase after each session:
+◦ What stuck?
+◦ What needs review?
+◦ Difficulty rating (easy → hard)
+• These reflections automatically create ReviewTasks with spaced intervals: 1 day, 3 days,
+7 days, and 14 days.
+3.5 Spaced Review
+• Review notifications remind users of upcoming review tasks.
+• The Review Screen shows:
+◦ Flashcards (manual or imported)
+◦ Past checkpoints/questions from previous sessions
+• Completion and difficulty feedback adjust future review intervals.
+3.6 Resource Drawer
+• Topic-specific library for:
+◦ PDFs
+◦ Images
+◦ Links
+• Optional PencilKit scratch pad for quick diagrams or handwritten notes.
+• Accessible during a session via a slide-in overlay so users never have to leave the study
+screen.
+3.7 Flashcards
+• Create and edit cards manually in-app.
+• Import formats:
+◦ CSV
+◦ TXT
+◦ JSON
+• Field mapping during import (front/back, tags, deck).
+• Optional ZIP bundle for media (images/audio).
+• Export to CSV + optional media ZIP for backups or sharing.
+3.8 Insights Dashboard
+• Visual progress tracking with Swift Charts:
+◦ Total focused time
+◦ Sessions by topic/mode
+◦ Review completion rates
+◦ Topics needing the most review
+• Data is stored locally and visualized in an accessible, minimal way.
+4. Technical Requirements
+4.1 Frameworks
+• SwiftUI: Cross-platform UI
+• Core Data: On-device storage, optional iCloud sync
+• UserNotifications: Review reminders and session alerts
+• ActivityKit: Live Activities for timers
+• WidgetKit: Home screen widgets for upcoming reviews/sessions
+• EventKit: Calendar import
+• QuickLook: Resource previews
+• UIDocumentPicker: File import/export
+• PencilKit: Drawing/sketching in Resource Drawer
+• Swift Charts: Insights visualizations
+4.2 Constraints
+• Offline-first: All functionality available without internet.
+• Privacy: All data stored locally; cloud sync is optional and user-controlled.
+• Compatibility: iOS 17+, iPadOS, macOS Catalyst.
+• No gamification: No points, streaks, or game-like rewards.
+• Accessibility: VoiceOver support, Dynamic Type, haptics, color-blind safe.
+5. UI & Design
+5.1 Brand Theme
+swift
+CopyEdit
+enum Theme {
+static let primary = Color(hex:"745DD0") // Royal
+Purple
+static let secondary = Color(hex:"7D98D3") // Periwinkle
+static let bgMain = Color(hex:"F3F1F8") // Soft
+Lavender Gray
+static let textMain = Color(hex:"080709") // Near-black
+static let canvas = Color(hex:"FDFDFE") // Paper
+White
+static let onPrimary = Color.white
+}
+• Primary: CTAs and key accents
+• Secondary: Supporting accents
+• bgMain: Main view backgrounds
+• canvas: Cards and content panels
+• textMain: Default text
+• onPrimary: Text/icons on primary background
+5.2 Visual Style
+• Cards & Panels: Rounded corners (20–24), .ultraThinMaterial for overlays,
+subtle shadows.
+• Spacing: Base 16pt, consistent grid alignment.
+• Typography:
+◦ Titles: Large, bold, readable
+◦ Body: Comfortable line height
+◦ Support for Dynamic Type sizes
+• Color usage:
+◦ Backgrounds in bgMain
+◦ Content surfaces in canvas
+◦ Calls-to-action in primary
+• Animations: Minimal, fast (150–220ms easeInOut)
+• Accessibility: High-contrast text, VoiceOver labels, tap targets ≥ 44×44
+5.3 Navigation
+Tabs:
+1. 2. 3. 5. Insights: Analytics and charts
+Home: Today’s plan, quick start, upcoming reviews
+Sessions: Start new session, session history
+Reviews: Pending reviews, flashcards, checkpoints
+4. Resources: Per-topic resource library
+6. Data Model
+Entities and relationships:
+• Topic — name, resources
+• StudySession — mode, topic, start/end, phases, notes
+• Checkpoint — text, timestamp, linked to session
+• ReviewTask — topic, due date, status
+• Flashcard — front, back, tags, deck
+• Prompt — text, mode(s), phase(s), elapsed time range
+7. Development Approach
+• Build in vertical slices, completing one end-to-end feature before moving on:
+App shell, theme, and navigation
+Session engine + prompt delivery
+4. Resource Drawer integration
+1. 2. 3. 5. Flashcard CRUD + import/export
+6. Insights dashboard + charts
+Reflection + spaced review scheduling
+• Prioritize stability and accessibility over new features.
+• Ensure consistent design across platforms.
+8. Realistic User Scenarios & Walkthroughs
+Scenario 1 — Exam Prep: Emma, College Student
+Goal: Prepare for a biology midterm in 1 week using Active Recall.
+1. Opening the App (Home Tab)
+◦ Emma sees Today’s Plan:
+▪ “1 Active Recall session — Biology: Cell Division” (suggested from
+Calendar + past sessions)
+▪ “2 Review Tasks due today”
+◦ She taps Start New Session.
+2. Planning the Session
+◦ Mode: Active Recall
+◦ Topic: “Biology — Cell Division”
+◦ Duration: 25 min
+◦ Goal: “Review mitosis & meiosis key steps”
+◦ Adds lecture PDF via Document Picker
+◦ Taps Start Session.
+3. During the Session (Session Tab)
+◦ Large timer in center, “Phase: Deep Work” pill at top
+◦ At 8 minutes (30% elapsed), a prompt slides in:
+“Close your notes. List the phases of mitosis in order.”
+◦ Emma opens the Resource Drawer briefly to check her slides, then closes it.
+4. Break & Reflection
+◦ After 25 minutes:
+“Break: 5 minutes. Step away from your desk.”
+◦ Post-break reflection form:
+▪ What stuck? — “Order of mitosis phases”
+▪ What to review? — “Differences in meiosis I vs II”
+▪ Difficulty: ★★★☆☆
+◦ ReviewTasks created for 1, 3, and 7 days.
+5. Review Day
+◦ Widget shows: “2 reviews due — Cell Division”
+◦ In Review Tab, she flips through flashcards + last session’s checkpoints
+◦ Marks each as Easy/Ok/Hard; intervals adjust.
+Scenario 2 — Research Paper: David, Law Student
+Goal: Draft outline for legal ethics paper using the Feynman Technique.
+1. Home Tab: Taps Start New Session.
+2. Planning:
+◦ Mode: Feynman Technique
+◦ Topic: “Legal Ethics — Case Studies”
+◦ Duration: 40 min
+◦ Goal: “Outline arguments for case brief”
+◦ Adds PDF of case ruling.
+3. During Session:
+◦ At 80% elapsed (Review phase), prompt:
+“Explain the case ruling in three sentences as if to a first-year student.”
+◦ Writes explanation in checkpoint form.
+4. Reflection:
+◦ What stuck? — “Main precedent points”
+◦ What to review? — “Exceptions and dissenting opinion”
+◦ Difficulty: ★★☆☆☆
+◦ Review scheduled for 3 days.
+Scenario 3 — Daily Quick Review: Sara, High School Student
+Goal: Keep up with language vocabulary using flashcards.
+1. Review Tab:
+◦ Shows “Spanish Deck — 10 cards due”
+◦ Taps into deck, flips cards, rates difficulty.
+2. New Cards:
+◦ Imports CSV from teacher via Document Picker.
+◦ Maps front=Spanish word, back=English translation.
+3. Spaced Review:
+◦ Hard words reappear in 1 day, easy ones in 7.
+Scenario 4 — Study Session with Notes & Sketches: Leo, Engineering Student
+Goal: Study circuit theory for upcoming quiz.
+1. Session Planning:
+◦ Mode: Problem Sets
+◦ Topic: “Circuit Theory — AC Analysis”
+◦ Duration: 50 min
+◦ Adds PNG schematic diagram to resources.
+2. During Session:
+◦ Resource Drawer shows schematic.
+◦ Uses PencilKit scratch pad to annotate diagram mid-session.
+3. Reflection:
+◦ Needs review on “phasor transformations” → added as checkpoint.
+4. Review:
+◦ Two days later, opens Review Tab, sees checkpoint prompt:
+“Sketch a phasor diagram for a series RLC circuit.”
+These scenarios ensure:
+• Feature coverage across all tabs
+• Realistic workflows for various student types
+• Clear developer reference for UI/UX flows and edge cases
+1. Non-Functional Requirements (NFRs)
+These ensure your coder builds for stability, performance, and maintainability.
+• Performance: App should launch in <2 seconds; UI updates <100ms.
+• Battery: Session timer should use minimal background activity; reduce polling.
+• Offline-First: All core features must work without internet.
+• Security: Use App Sandbox; secure file storage in app container.
+• Scalability: Core Data relationships optimized for thousands of cards/sessions.
+• Maintainability: Feature-folder structure; MVVM with ViewModels per screen.
+• Testing: Unit tests for business logic; UI tests for main flows; automated with Xcode
+schemes.
+2. Error & Edge Case Handling
+• File Import: If import fails → show clear error & offer template.
+• Empty States: Friendly placeholders in each tab (e.g., “No sessions yet — start one!”).
+• Notifications: Handle denied permissions gracefully with explainer.
+• Data Conflicts: If same flashcard imported twice → prompt user to merge/skip.
+• Long Sessions: Warn user when exceeding recommended focus length.
+3. Accessibility & Localization
+• VoiceOver descriptions for prompts, flashcards, and controls.
+• Dynamic Type: Test at XXL sizes without layout breaks.
+• High Contrast Mode adjustments.
+• Localizable strings for future multi-language support.
+4. Theming & Branding Guidelines
+• App Icon: Minimal, flat style matching purple palette.
+• Launch Screen: Logo + soft gradient in primary/secondary colors.
+• Consistent Components: Buttons, cards, lists follow design tokens.
+• Dark Mode: bgMain → dark variant #0F0E12, canvas → #16151B, keep primary/
+secondary consistent.
+5. Data Privacy & Export
+• Local-only by default; explicit opt-in for iCloud sync.
+• Users can export:
+◦ All sessions (CSV/JSON)
+◦ Flashcards (CSV/ZIP)
+◦ Resources (ZIP)
+• Export via UIDocumentPicker or Share Sheet.
+• Clear privacy note in settings: “We never collect your study data.”
+6. Future Expansion Ideas (V2+)
+(Keeps the doc forward-looking without overloading V1)
+• Audio note recording inside sessions.
+• Search & filter across all topics/resources.
+• Advanced review scheduling algorithms (Leitner, SM-2).
+• Session templates for common exams (SAT, MCAT, LSAT).
+• Optional collaboration: share decks or resource bundles with peers (local AirDrop).
+7. App Architecture & File Structure
+Defines how code is organized so it stays maintainable.
+• Architecture: MVVM with feature folders.
+• Folder Layout:
+◦ /App – App entry point, theme, app-wide helpers.
+◦ /Features – Each tab as a separate folder (Home, Sessions, Reviews,
+Resources, Insights).
+◦ /Components – Reusable UI pieces (buttons, cards, modals).
+◦ /Data – Core Data models, persistence helpers, mock data.
+◦ /Services – Notification manager, prompt engine, file import/export.
+◦ /Assets – Images, icons, color sets.
+◦ /Tests – Unit + UI tests.
+8. State Management Plan
+Explains how data flows in the app:
+• Global State: Minimal; only user settings and shared resources.
+• Feature State: Managed in ViewModels per feature.
+• Persistence: Core Data context per feature; background save queues for imports.
+• Session State: State machine (enum SessionPhase) controls timer, prompts,
+checkpoints.
+9. Prompt Pack Specification
+Detailed format for your local JSON/Plist prompt sets:
+json
+CopyEdit
+{
+"id": "uuid-string",
+"modes": ["Active Recall"],
+"phases": ["Deep Work"],
+"minElapsed": 0.2,
+"maxElapsed": 0.3,
+"text": "Close your notes. List 3 key facts from memory."
+}
+• modes: Which study modes this applies to.
+• phases: Session phases where prompt can appear.
+• min/maxElapsed: Session progress window in decimal form.
+• text: The actual prompt.
+10. Widget & Live Activity Behavior
+• Review Widget: Shows # of due reviews, tap to open Review Tab.
+• Session Live Activity: Shows timer countdown, phase, and next prompt countdown on
+lock screen.
+• Updates via ActivityKit every 1s; ends on session complete or cancel.
+11. Testing Requirements
+• Unit Tests: PromptEngine filtering, ReviewTask scheduling, import parsing.
+• UI Tests: Start→Prompt→Reflection flow, Flashcard review, Resource import.
+• Performance Tests: Load >1000 flashcards under 200ms; Import CSV within 3s.
+12. Deployment & Versioning
+• Minimum OS: iOS 17, iPadOS 17, macOS 14.
+• Versioning: Semantic (MAJOR.MINOR.PATCH).
+• Build Types: Debug (test data enabled), Release (test data removed).
+• App Store Prep: Screenshots for iPhone/iPad/Mac, privacy policy in settings.
+13. User Settings & Preferences
+• Customizations:
+◦ Default study mode.
+◦ Default session length.
+◦ Enable/disable auto prompts.
+◦ Notification preferences (reminders, review pings).
+◦ Dark mode override.
+• Data Control:
+◦ Export/import data.
+◦ Toggle iCloud sync.
+◦ Clear all app data.
+14. Empty State & Onboarding
+• First Launch:
+◦ Short 3-step onboarding (Select default mode → Add first topic → Start first
+session).
+• Empty State Messaging:
+◦ Home: “No sessions yet — start your first study sprint.”
+◦ Reviews: “Nothing to review today — great job staying on track.”
+◦ Resources: “No resources saved yet. Add PDFs, images, or links here.”
+15. App Icons & Branding Assets
+• Icon variations for light/dark.
+• Icon grid alignment.
+• App Store marketing screenshots.
+• Brand usage rules (don’t change purple palette, no gradients unless background-only).
+16. Security & Data Integrity
+• All data in Core Data within app sandbox.
+• File imports copied into app container.
+• Security-scoped bookmarks for long-term file access.
+• Background save queues to prevent data loss if app quits mid-import.
+• Auto-backup to iCloud when enabled.
+17. Maintenance & Extensibility
+• Pluggable Prompt Packs: Allow new prompts to be added via bundled JSON in app
+updates.
+• Study Mode Registry: Enum with metadata so new study modes can be added with
+minimal refactor.
+• Modular Feature Folders: Each tab’s logic self-contained to allow independent
+iteration.
+18. Compliance & Store Guidelines
+• App Store privacy labels: “No data collected.”
+• Ensure compliance with Apple Human Interface Guidelines (HIG).
+• Accessibility compliance per WCAG 2.1 AA.
+19. Analytics (On-Device Only)
+• Track usage trends locally (never sent to a server).
+• Metrics: sessions completed, average duration, modes used, review completion rate.
+• Used for Insights tab & adaptive suggestions.
+20. App Performance Targets
+• Launch time < 2 seconds cold start.
+• Memory use under 200 MB for 1,000+ flashcards.
+• Idle CPU under 5% during timers.
+21. QA & Acceptance Criteria
+• Functional Acceptance: Every feature matches documented behavior and is accessible
+from all platforms.
+• Visual Acceptance: All colors, spacings, and typography match theme spec.
+• Cross-Device Testing: Verify iPhone/iPad/Mac layouts for each screen.
+22. Release Checklist
+Before shipping an update:
+1. Pass all unit/UI/performance tests.
+2. Validate all Core Data migrations.
+3. Confirm icons, launch screens, and widgets work on all devices.
+4. App Store metadata/screenshots updated.
+5. Privacy Policy in settings is correct.
+23. Disaster Recovery / Data Safety
+• Auto-save session state every 30 seconds.
+• On crash/restart, offer “Resume Last Session.”
+• Flashcard imports auto-rollback if parsing fails mid-import.
